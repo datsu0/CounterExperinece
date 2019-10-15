@@ -11,8 +11,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.content.Intent;
 
-public class MainActivity extends AppCompatActivity {
+import static android.nfc.NfcAdapter.EXTRA_DATA;
+
+public class MainActivity extends AppCompatActivity  {
     ArrayAdapter<String> adapter;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,10 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String msg = position + "番目のアイテムがクリックされました";
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, SubActivity.class);  //インテントの作成
+                intent.putExtra("key",position);
+                startActivity(intent);
             }
         });
 
@@ -52,11 +58,23 @@ public class MainActivity extends AppCompatActivity {
 //                return false;
 //            }
 //        });
-    }     //要素追加処理
+
+
+
+    }
+
+    //要素追加処理
     private void addStringData(){
         //EditTextオブジェクト取得
         EditText edit=(EditText)findViewById(R.id.edit_text);
         //EditText(テキスト)を取得し、アダプタに追加
         adapter.add(edit.getText().toString());
     }
+
+    //ボタンが押された時の処理
+    public void onClick(View view){
+
+    }
 }
+
+

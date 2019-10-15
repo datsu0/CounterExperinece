@@ -3,6 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
+
     <EditText
         android:id="@+id/edit_text"
         android:layout_width="fill_parent"
@@ -17,4 +19,6 @@
         android:id="@+id/list_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"/>
+
 </LinearLayout>
+

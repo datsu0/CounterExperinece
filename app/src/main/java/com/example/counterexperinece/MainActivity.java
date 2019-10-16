@@ -17,6 +17,8 @@ import static android.nfc.NfcAdapter.EXTRA_DATA;
 
 public class MainActivity extends AppCompatActivity  {
     ArrayAdapter<String> adapter;
+    String[] listName = new String[100];
+    int Page=0;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity  {
                 //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(MainActivity.this, SubActivity.class);  //インテントの作成
                 intent.putExtra("key",position);
+                intent.putExtra("name",listName[position]);
                 startActivity(intent);
             }
         });
@@ -69,6 +72,9 @@ public class MainActivity extends AppCompatActivity  {
         EditText edit=(EditText)findViewById(R.id.edit_text);
         //EditText(テキスト)を取得し、アダプタに追加
         adapter.add(edit.getText().toString());
+
+        listName[Page]=edit.getText().toString();
+        Page++;
     }
 
     //ボタンが押された時の処理

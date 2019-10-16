@@ -30,7 +30,8 @@ public class SubActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         int position  = intent.getIntExtra("key",0);
-        Toast toast = Toast.makeText(this, String.format("数：%d", position), Toast.LENGTH_LONG);
+        String name = intent.getStringExtra("name");
+        Toast toast = Toast.makeText(this, String.format(name+" ：%d", position), Toast.LENGTH_LONG);
         toast.setGravity(Gravity.TOP, 0, 150);
         toast.show();
     }

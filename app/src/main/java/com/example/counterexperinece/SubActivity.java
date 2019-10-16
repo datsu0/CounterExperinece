@@ -21,7 +21,7 @@ public class SubActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.text_view);
 
         Button btn = (Button)findViewById(R.id.btn);
-        Button btn2 = (Button)findViewById(R.id.btn2);
+        Button btnClac = (Button)findViewById(R.id.btnCalc);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -2,7 +2,11 @@ package com.example.counterexperinece;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -13,20 +17,46 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.content.Intent;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import static android.nfc.NfcAdapter.EXTRA_DATA;
 
 public class MainActivity extends AppCompatActivity  {
     ArrayAdapter<String> adapter;
     String[] listName = new String[100];
-    int Page=0;
+    final static String FILENAME = "data.xml";
+    int listCounter=0;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         //ListViewオブジェクトの取得
         ListView listView=(ListView)findViewById(R.id.list_view);
-        //ArrayAdapterオブジェクト生成
-        adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+
+        SharedPreferences sp = this.getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
+        listCounter = sp.getInt("listNum",0);
+
+        List<String> saveList = new ArrayList<String>();
+
+        for(int i=0;i<listCounter;i++){
+            String str = sp.getString("key"+i,null);
+            if(str!=null){
+                saveList.add(str);
+                Toast toast = Toast.makeText(this, String.format(str+" ： %d",listCounter), Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.TOP, 0, 150);
+                toast.show();
+            }
+        }
+        if(saveList==null || saveList.size()==0){
+            //ArrayAdapterオブジェクト生成
+            adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        }else {
+            //ArrayAdapterオブジェクト生成
+            adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,saveList);
+        }
+
         //Buttonオブジェクト取得
         Button btn=(Button)findViewById(R.id.btn);
         //クリックイベントの通知先指定
@@ -47,7 +77,9 @@ public class MainActivity extends AppCompatActivity  {
                 //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(MainActivity.this, SubActivity.class);  //インテントの作成
                 intent.putExtra("key",position);
-                intent.putExtra("name",listName[position]);
+                SharedPreferences sp = MainActivity.this.getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
+                String sendData = sp.getString("key"+position,null);
+                intent.putExtra("name",sendData);
                 startActivity(intent);
             }
         });
@@ -61,20 +93,25 @@ public class MainActivity extends AppCompatActivity  {
 //                return false;
 //            }
 //        });
-
-
-
     }
 
     //要素追加処理
     private void addStringData(){
         //EditTextオブジェクト取得
         EditText edit=(EditText)findViewById(R.id.edit_text);
+        SpannableStringBuilder sb = (SpannableStringBuilder)edit.getText();
+        String enterName = sb.toString();
+
+        SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
+        SharedPreferences.Editor e = sp.edit();
+        e.putString("key"+listCounter,enterName);
+        e.putInt("listNum",listCounter);
+        e.commit();
+        //e.clear().commit();
         //EditText(テキスト)を取得し、アダプタに追加
         adapter.add(edit.getText().toString());
-
-        listName[Page]=edit.getText().toString();
-        Page++;
+        listName[listCounter]=edit.getText().toString();
+        listCounter++;
     }
 
     //ボタンが押された時の処理

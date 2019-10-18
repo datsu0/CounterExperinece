@@ -1,8 +1,9 @@
 package com.example.counterexperinece;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -10,16 +11,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.json.JSONArray;
+import org.json.JSONException;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class SubActivity extends AppCompatActivity {
+public class SubActivity extends AppCompatActivity implements Serializable {
     public int time=0;
+    public String name;
+    final static String FILENAME = "data.xml";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
-
         TextView textView = findViewById(R.id.text_view);
-
         Button btn = (Button)findViewById(R.id.btn);
         Button btnClac = (Button)findViewById(R.id.btnCalc);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -37,12 +48,13 @@ public class SubActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //要素追加
                 calcNum();
+
             }
         });
 
         Intent intent = getIntent();
         int position  = intent.getIntExtra("key",0);
-        String name = intent.getStringExtra("name");
+        name = intent.getStringExtra("name");
         name = name + ": ";
         textView.setText(name);
 //        Toast toast = Toast.makeText(this, String.format(name+" ：%d", position), Toast.LENGTH_LONG);
@@ -50,16 +62,22 @@ public class SubActivity extends AppCompatActivity {
 //        toast.show();
     }
 
-    public void calcNum(){
+    public void calcNum() {
         EditText editText1 = findViewById(R.id.edit_text);
         String str1 = editText1.getText().toString();
         int num1 = Integer.parseInt(str1);
+        SharedPreferences sp = this.getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
+        time = sp.getInt(name,0);
+        SharedPreferences.Editor e = sp.edit();
+        e.putInt(name,time);
+        e.commit();
         time = num1 + time;
-        Toast toast = Toast.makeText(this, String.format("%d", time), Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.TOP, 0, 150);
-        toast.show();
+//        Toast toast = Toast.makeText(this, String.format("%d", time), Toast.LENGTH_LONG);
+//        toast.setGravity(Gravity.TOP, 0, 150);
+//        toast.show();
         TextView textView1 = findViewById(R.id.text_view_clac);
         String str3 = String.valueOf(time);
         textView1.setText(str3);
     }
+
 }

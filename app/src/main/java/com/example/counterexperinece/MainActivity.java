@@ -44,9 +44,9 @@ public class MainActivity extends AppCompatActivity  {
             String str = sp.getString("key"+i,null);
             if(str!=null){
                 saveList.add(str);
-                Toast toast = Toast.makeText(this, String.format(str+" ： %d",listCounter), Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.TOP, 0, 150);
-                toast.show();
+//                Toast toast = Toast.makeText(this, String.format(str+" ： %d",listCounter), Toast.LENGTH_LONG);
+//                toast.setGravity(Gravity.TOP, 0, 150);
+//                toast.show();
             }
         }
         if(saveList==null || saveList.size()==0){
@@ -99,6 +99,12 @@ public class MainActivity extends AppCompatActivity  {
     private void addStringData(){
         //EditTextオブジェクト取得
         EditText edit=(EditText)findViewById(R.id.edit_text);
+        if(edit.getText().toString().equals("")==true){
+            Toast toast = Toast.makeText(this, String.format("fill out blank"), Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.TOP, 0, 150);
+            toast.show();
+            return;
+        }
         SpannableStringBuilder sb = (SpannableStringBuilder)edit.getText();
         String enterName = sb.toString();
 
@@ -107,6 +113,7 @@ public class MainActivity extends AppCompatActivity  {
         e.putString("key"+listCounter,enterName);
         e.putInt("listNum",listCounter);
         e.commit();
+
         //e.clear().commit();
         //EditText(テキスト)を取得し、アダプタに追加
         adapter.add(edit.getText().toString());

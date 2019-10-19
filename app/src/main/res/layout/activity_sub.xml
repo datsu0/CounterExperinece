@@ -27,6 +27,17 @@
         app:layout_constraintVertical_bias="0.2"
         android:text="add time" />
 
+    <Button
+        android:id="@+id/LoadButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.3"
+        android:text="load data" />
+
     <TextView
         android:id="@+id/text_view"
         android:layout_width="wrap_content"
@@ -42,6 +53,7 @@
 
     <EditText
         android:id="@+id/edit_text"
+        android:digits="0123456789"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"

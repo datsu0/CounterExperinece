@@ -1,6 +1,9 @@
 package com.example.counterexperinece;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TabHost;
 import android.widget.Toast;
 import android.content.Intent;
 
@@ -27,20 +31,21 @@ public class MainActivity extends AppCompatActivity  {
     ArrayAdapter<String> adapter;
     String[] listName = new String[100];
     final static String FILENAME = "data.xml";
+    //private RecyclerView recyclerView;
     int listCounter=0;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         //ListViewオブジェクトの取得
-        ListView listView=(ListView)findViewById(R.id.list_view);
+        final ListView listView=(ListView)findViewById(R.id.list_view);
 
         SharedPreferences sp = this.getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
-        listCounter = sp.getInt("listNum",0);
+        listCounter = sp.getInt("listNum",1);
 
-        List<String> saveList = new ArrayList<String>();
+        final List<String> saveList = new ArrayList<String>();
 
-        for(int i=0;i<listCounter;i++){
+        for(int i=0;i<listCounter+1;i++){
             String str = sp.getString("key"+i,null);
             if(str!=null){
                 saveList.add(str);
@@ -52,9 +57,11 @@ public class MainActivity extends AppCompatActivity  {
         if(saveList==null || saveList.size()==0){
             //ArrayAdapterオブジェクト生成
             adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+            //CustomAdapter adapter = new CustomAdapter(getApplicationContext(),R.layout.row_item,saveList.toArray(new String[saveList.size()]));
         }else {
             //ArrayAdapterオブジェクト生成
             adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,saveList);
+            //CustomAdapter adapter = new CustomAdapter(getApplicationContext(),R.layout.row_item,saveList.toArray(new String[saveList.size()]));
         }
 
         //Buttonオブジェクト取得
@@ -71,9 +78,10 @@ public class MainActivity extends AppCompatActivity  {
         //Adapterのセット
         listView.setAdapter(adapter);
 
+        // リスト項目がクリックされたときのイベント
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String msg = position + "番目のアイテムがクリックされました";
+                //String msg = position + "番目のアイテムがクリックされました";
                 //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(MainActivity.this, SubActivity.class);  //インテントの作成
                 intent.putExtra("key",position);
@@ -83,16 +91,21 @@ public class MainActivity extends AppCompatActivity  {
                 startActivity(intent);
             }
         });
-
-        //リスト項目が長押しされた時のイベントを追加
-//        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        //        リスト項目が長押しされた時のイベントを追加
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 //                String msg = position + "番目のアイテムが長押しされました";
 //                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-//                return false;
-//            }
-//        });
+                saveList.remove(position);
+                SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
+                SharedPreferences.Editor e = sp.edit();
+                e.remove("key"+position);
+                e.commit();
+                adapter.notifyDataSetChanged();
+                return false;
+            }
+        });
     }
 
     //要素追加処理
@@ -110,6 +123,7 @@ public class MainActivity extends AppCompatActivity  {
 
         SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor e = sp.edit();
+        listCounter=adapter.getCount();
         e.putString("key"+listCounter,enterName);
         e.putInt("listNum",listCounter);
         e.commit();
@@ -118,12 +132,6 @@ public class MainActivity extends AppCompatActivity  {
         //EditText(テキスト)を取得し、アダプタに追加
         adapter.add(edit.getText().toString());
         listName[listCounter]=edit.getText().toString();
-        listCounter++;
-    }
-
-    //ボタンが押された時の処理
-    public void onClick(View view){
-
     }
 }
 

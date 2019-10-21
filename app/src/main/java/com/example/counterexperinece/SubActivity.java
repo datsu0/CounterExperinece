@@ -93,9 +93,8 @@ public class SubActivity extends AppCompatActivity implements Serializable {
         TextView textView = findViewById(R.id.text_view_clac);
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         textView.setText(sp.getString(name, null), TextView.BufferType.NORMAL);
-        time = Integer.valueOf(textView.getText().toString());
-        if(textView.getText().toString().length()==0){
-            time = 0;
+        if(textView.getText().toString().length()!=0){
+            time = Integer.valueOf(textView.getText().toString());
         }
     }
 }

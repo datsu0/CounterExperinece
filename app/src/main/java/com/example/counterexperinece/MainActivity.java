@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
@@ -94,15 +95,30 @@ public class MainActivity extends AppCompatActivity  {
         //        リスト項目が長押しされた時のイベントを追加
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            public boolean onItemLongClick(AdapterView<?> parent, View view,final int position, long id) {
 //                String msg = position + "番目のアイテムが長押しされました";
 //                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                saveList.remove(position);
-                SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
-                SharedPreferences.Editor e = sp.edit();
-                e.remove("key"+position);
-                e.commit();
-                adapter.notifyDataSetChanged();
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage("Are you sure you want to delete it ?")
+                        .setTitle("delete")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                saveList.remove(position);
+                                SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
+                                SharedPreferences.Editor e = sp.edit();
+                                e.remove("key"+position);
+                                e.commit();
+                                adapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("Cancel",null)
+                        .show();
+
+
+
                 return false;
             }
         });

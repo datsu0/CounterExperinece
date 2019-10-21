@@ -1,7 +1,9 @@
 package com.example.counterexperinece;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -45,6 +47,25 @@ public class SubActivity extends AppCompatActivity implements Serializable {
         loadButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
                 loadButtonClick();
+            }
+        });
+        Button deleteButton = (Button)findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(SubActivity.this);
+                builder.setMessage("Are you sure you want to delete it ?")
+                        .setTitle("delete")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(SubActivity.this);
+                                sp.edit().remove(name).commit();
+                                time = 0;
+                            }
+                        })
+                        .setNegativeButton("Cancel",null)
+                        .show();
             }
         });
         btnClac.setOnClickListener(new View.OnClickListener() {

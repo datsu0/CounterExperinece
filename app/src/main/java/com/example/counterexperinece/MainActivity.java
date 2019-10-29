@@ -10,7 +10,10 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -18,15 +21,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import static android.nfc.NfcAdapter.EXTRA_DATA;
 
 public class MainActivity extends AppCompatActivity  {
     ArrayAdapter<String> adapter;
@@ -123,6 +122,31 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    // メニューアイテム選択イベント
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        switch (item.getItemId()) {
+            case R.id.menu1:
+                // メニュー１選択時の処理
+                builder.setMessage("自分がかけた時間やお金を記録していこう！！");
+                builder.show();
+                break;
+            case R.id.menu2:
+                builder.setMessage("長押しで消去可能");
+                builder.show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     //要素追加処理
     private void addStringData(){

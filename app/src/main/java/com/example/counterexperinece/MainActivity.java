@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity  {
 
         SharedPreferences sp = this.getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
         listCounter = sp.getInt("listNum",1);
+//        SharedPreferences.Editor e = sp.edit();
+
 
         final List<String> saveList = new ArrayList<String>();
 
@@ -81,12 +83,13 @@ public class MainActivity extends AppCompatActivity  {
         // リスト項目がクリックされたときのイベント
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //String msg = position + "番目のアイテムがクリックされました";
-                //Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+//                String msg = position + "番目のアイテムがクリックされました";
+//                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(MainActivity.this, SubActivity.class);  //インテントの作成
                 intent.putExtra("key",position);
                 SharedPreferences sp = MainActivity.this.getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
                 String sendData = sp.getString("key"+position,null);
+//                Toast.makeText(getApplicationContext(), sendData, Toast.LENGTH_LONG).show();
                 intent.putExtra("name",sendData);
                 startActivity(intent);
             }

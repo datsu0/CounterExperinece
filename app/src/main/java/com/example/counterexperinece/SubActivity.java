@@ -2,7 +2,6 @@ package com.example.counterexperinece;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,9 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import org.w3c.dom.Text;
+
 import java.io.Serializable;
 
 
@@ -31,7 +29,14 @@ public class SubActivity extends AppCompatActivity implements Serializable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
-        TextView textView = findViewById(R.id.text_view);
+        final TextView textView = findViewById(R.id.text_view);
+        final TextView textViewUnit = findViewById(R.id.text_unit);
+
+        Intent intent = getIntent();
+        int position  = intent.getIntExtra("key",0);
+        name = intent.getStringExtra("name");
+        final String unit = "unit"+name;
+
         Button btn = (Button)findViewById(R.id.btn);
         Button btnClac = (Button)findViewById(R.id.btnCalc);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -43,10 +48,33 @@ public class SubActivity extends AppCompatActivity implements Serializable {
             }
 
         });
-        Button loadButton = (Button)findViewById(R.id.LoadButton);
-        loadButton.setOnClickListener(new View.OnClickListener() {
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        Button minButton = (Button)findViewById(R.id.minButton);
+        minButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
-                loadButtonClick();
+                textViewUnit.setText("分");
+                sp.edit().putString(unit, textViewUnit.getText().toString()).commit();
+            }
+        });
+        Button hourButton = (Button)findViewById(R.id.hourButton);
+        hourButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                textViewUnit.setText("時間");
+                sp.edit().putString(unit, textViewUnit.getText().toString()).commit();
+            }
+        });
+        Button countButton = (Button)findViewById(R.id.countButton);
+        countButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                textViewUnit.setText("回");
+                sp.edit().putString(unit, textViewUnit.getText().toString()).commit();
+            }
+        });
+        Button moneyButton = (Button)findViewById(R.id.moneyButton);
+        moneyButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                textViewUnit.setText("円");
+                sp.edit().putString(unit, textViewUnit.getText().toString()).commit();
             }
         });
         Button deleteButton = (Button)findViewById(R.id.deleteButton);
@@ -77,11 +105,16 @@ public class SubActivity extends AppCompatActivity implements Serializable {
             }
         });
 
-        Intent intent = getIntent();
-        int position  = intent.getIntExtra("key",0);
-        name = intent.getStringExtra("name");
+
+        textViewUnit.setText(sp.getString(unit,null),TextView.BufferType.NORMAL);
         name = name + ": ";
         textView.setText(name);
+        TextView textViewNum = findViewById(R.id.text_view_clac);
+//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        textViewNum.setText(sp.getString(name, null), TextView.BufferType.NORMAL);
+        if(textViewNum.getText().toString().length()!=0){
+            time = Integer.valueOf(textViewNum.getText().toString());
+        }
 //        Toast toast = Toast.makeText(this, String.format(name+" ：%d", position), Toast.LENGTH_LONG);
 //        toast.setGravity(Gravity.TOP, 0, 150);
 //        toast.show();
@@ -110,12 +143,12 @@ public class SubActivity extends AppCompatActivity implements Serializable {
         sp.edit().putString(name, textView1.getText().toString()).commit();
     }
 
-    private void loadButtonClick(){
-        TextView textView = findViewById(R.id.text_view_clac);
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        textView.setText(sp.getString(name, null), TextView.BufferType.NORMAL);
-        if(textView.getText().toString().length()!=0){
-            time = Integer.valueOf(textView.getText().toString());
-        }
-    }
+//    private void loadButtonClick(){
+//        TextView textView = findViewById(R.id.text_view_clac);
+//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+//        textView.setText(sp.getString(name, null), TextView.BufferType.NORMAL);
+//        if(textView.getText().toString().length()!=0){
+//            time = Integer.valueOf(textView.getText().toString());
+//        }
+//    }
 }

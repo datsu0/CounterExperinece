@@ -6,8 +6,8 @@ android {
     defaultConfig {
         applicationId "com.develope.counterexperinece"
         minSdkVersion 24
-        targetSdkVersion 26
-        versionCode 4
+        targetSdkVersion 28
+        versionCode 10
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

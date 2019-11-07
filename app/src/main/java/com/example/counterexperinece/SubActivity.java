@@ -90,9 +90,6 @@ public class SubActivity extends AppCompatActivity implements Serializable {
                                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(SubActivity.this);
                                 sp.edit().remove(name).commit();
                                 time = 0;
-                                String str = String.valueOf(time);
-                                TextView textView1 = findViewById(R.id.text_view_clac);
-                                textView1.setText(str);
                             }
                         })
                         .setNegativeButton("Cancel",null)

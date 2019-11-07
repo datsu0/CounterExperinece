@@ -1,18 +1,13 @@
 package com.example.counterexperinece;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
@@ -29,13 +24,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
     ArrayAdapter<String> adapter;
     String[] listName = new String[100];
     final static String FILENAME = "data.xml";
@@ -45,20 +37,6 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addStringData();
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         //ListViewオブジェクトの取得
         final ListView listView=(ListView)findViewById(R.id.list_view);
 
@@ -66,10 +44,6 @@ public class MainActivity extends AppCompatActivity {
         listCounter = sp.getInt("listNum",1);
 //        SharedPreferences.Editor e = sp.edit();
 
-        final RecyclerView recyclerView = findViewById(R.id.my_recycler_view);
-        recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager rLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(rLayoutManager);
 
         final List<String> saveList = new ArrayList<String>();
 
@@ -82,30 +56,27 @@ public class MainActivity extends AppCompatActivity {
 //                toast.show();
             }
         }
-
         if(saveList==null || saveList.size()==0){
             //ArrayAdapterオブジェクト生成
             adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-
-            }else {
+            //CustomAdapter adapter = new CustomAdapter(getApplicationContext(),R.layout.row_item,saveList.toArray(new String[saveList.size()]));
+        }else {
             //ArrayAdapterオブジェクト生成
-            //adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,saveList);
-            RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList);
-            recyclerView.setAdapter(rAdapter);
-
+            adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,saveList);
+            //CustomAdapter adapter = new CustomAdapter(getApplicationContext(),R.layout.row_item,saveList.toArray(new String[saveList.size()]));
         }
 
         //Buttonオブジェクト取得
-//        Button btn=(Button)findViewById(R.id.btn);
-//        クリックイベントの通知先指定
-//        btn.setOnClickListener(new OnClickListener() {
-//            //クリックイベント
-//            @Override
-//            public void onClick(View v) {
-//                //要素追加
-//                addStringData();
-//            }
-//        });
+        Button btn=(Button)findViewById(R.id.btn);
+        //クリックイベントの通知先指定
+        btn.setOnClickListener(new OnClickListener() {
+            //クリックイベント
+            @Override
+            public void onClick(View v) {
+                //要素追加
+                addStringData();
+            }
+        });
         //Adapterのセット
         listView.setAdapter(adapter);
 
@@ -153,44 +124,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-
-
-        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
-                ((RecyclerViewAdapter) recyclerView.getAdapter()).remove(viewHolder.getAdapterPosition());
-            }
-
-
-        };
-
-        (new ItemTouchHelper(callback)).attachToRecyclerView(recyclerView);
-
-        // idがdialogButtonのButtonを取得
-        Button dialogBtn = (Button) findViewById(R.id.dialogButton);
-        // clickイベント追加
-        dialogBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            // クリックしたらダイアログを表示する処理
-            public void onClick(View v) {
-                // ダイアログクラスをインスタンス化
-                CustomDialogFlagment dialog = new CustomDialogFlagment();
-                // 表示  getFagmentManager()は固定、sampleは識別タグ
-                dialog.show(getFragmentManager(), "sample");
-            }
-        });
-
-    }
-
-    public void setTextView(String value){
-        TextView textView = (TextView) findViewById(R.id.text);
-        textView.setText(value);
     }
 
     @Override
@@ -243,8 +176,6 @@ public class MainActivity extends AppCompatActivity {
         adapter.add(edit.getText().toString());
         listName[listCounter]=edit.getText().toString();
     }
-
-
 }
 
 

@@ -12,10 +12,12 @@ import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -67,10 +69,42 @@ public class MainActivity extends AppCompatActivity  {
         }
 
         //Buttonオブジェクト取得
+<<<<<<< Updated upstream
         Button btn=(Button)findViewById(R.id.btn);
         //クリックイベントの通知先指定
         btn.setOnClickListener(new OnClickListener() {
             //クリックイベント
+=======
+//        Button btn=(Button)findViewById(R.id.btn);
+//        クリックイベントの通知先指定
+//        btn.setOnClickListener(new OnClickListener() {
+//
+//            //クリックイベント
+//            @Override
+//            public void onClick(View v) {
+//                //要素追加
+//                addStringData();
+//                //DialogFragment newFragment = new TestDialogFragment();
+//                //newFragment.show(getFragmentManager(), "test");
+//                EditText edit=(EditText)findViewById(R.id.edit_text);
+//                new AlertDialog.Builder(MainActivity.this)
+//                        .setTitle("title")
+//                        .setMessage("message")
+//                        .setView(edit)
+//                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//
+//                            }
+//                        });
+//                println("path the upper source¥n");
+//            }
+//        });
+
+
+        Button btnDaiglog = (Button)findViewById(R.id.btnDialog);
+        btnDaiglog.setOnClickListener(new OnClickListener() {
+>>>>>>> Stashed changes
             @Override
             public void onClick(View v) {
                 //要素追加
@@ -101,7 +135,6 @@ public class MainActivity extends AppCompatActivity  {
 //                String msg = position + "番目のアイテムが長押しされました";
 //                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
 
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setMessage("Are you sure you want to delete it ?")
                         .setTitle("delete")
@@ -118,8 +151,6 @@ public class MainActivity extends AppCompatActivity  {
                         })
                         .setNegativeButton("Cancel",null)
                         .show();
-
-
 
                 return false;
             }
@@ -176,6 +207,44 @@ public class MainActivity extends AppCompatActivity  {
         adapter.add(edit.getText().toString());
         listName[listCounter]=edit.getText().toString();
     }
+<<<<<<< Updated upstream
+=======
+
+    public static class TestDialogFragment extends DialogFragment {
+
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            final EditText editText = new EditText(getActivity());
+
+            builder.setMessage("ダイアログ")
+
+                    .setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                            String returnValue = editText.getText().toString();
+                            // MainActivityのインスタンスを取得
+                            
+                        }
+                    })
+                    .setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+    public void setTextView(String value){
+        TextView textView = (TextView) findViewById(R.id.text);
+        textView.setText(value);
+    }
+>>>>>>> Stashed changes
 }
 
 

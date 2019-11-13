@@ -4,9 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -21,6 +24,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -41,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     final static String FILENAME = "data.xml";
     //private RecyclerView recyclerView;
     int listCounter=0;
+    private Animation rotateForward,rotateBackward;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,9 +59,23 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addStringData();
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                AlertDialog.Builder alertDialog=new AlertDialog.Builder(MainActivity.this);
+
+                // ダイアログの設定
+                alertDialog.setTitle("追加");          //タイトル
+                alertDialog.setMessage("ないよう");      //内容
+
+                alertDialog.setPositiveButton("追加", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        //「おーけー」ボタンが押された時の処理
+                    }
+                });
+
+                // ダイアログの作成と表示
+                alertDialog.create().show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
             }
         });
 
@@ -86,13 +106,11 @@ public class MainActivity extends AppCompatActivity {
         if(saveList==null || saveList.size()==0){
             //ArrayAdapterオブジェクト生成
             adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-
-            }else {
+        }else {
             //ArrayAdapterオブジェクト生成
             //adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,saveList);
             RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList);
             recyclerView.setAdapter(rAdapter);
-
         }
 
         //Buttonオブジェクト取得
@@ -130,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
 //                String msg = position + "番目のアイテムが長押しされました";
 //                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
 
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setMessage("Are you sure you want to delete it ?")
                         .setTitle("delete")
@@ -147,12 +164,11 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .setNegativeButton("Cancel",null)
                         .show();
-
-
-
                 return false;
             }
         });
+
+
 
 
 
@@ -171,20 +187,6 @@ public class MainActivity extends AppCompatActivity {
         };
 
         (new ItemTouchHelper(callback)).attachToRecyclerView(recyclerView);
-
-        // idがdialogButtonのButtonを取得
-        Button dialogBtn = (Button) findViewById(R.id.dialogButton);
-        // clickイベント追加
-        dialogBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            // クリックしたらダイアログを表示する処理
-            public void onClick(View v) {
-                // ダイアログクラスをインスタンス化
-                CustomDialogFlagment dialog = new CustomDialogFlagment();
-                // 表示  getFagmentManager()は固定、sampleは識別タグ
-                dialog.show(getFragmentManager(), "sample");
-            }
-        });
 
     }
 
@@ -243,8 +245,6 @@ public class MainActivity extends AppCompatActivity {
         adapter.add(edit.getText().toString());
         listName[listCounter]=edit.getText().toString();
     }
-
-
 }
 
 

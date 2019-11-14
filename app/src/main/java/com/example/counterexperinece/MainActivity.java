@@ -20,9 +20,11 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
+import android.transition.TransitionValues;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,8 +32,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     final static String FILENAME = "data.xml";
     //private RecyclerView recyclerView;
     int listCounter=0;
+    String unit="";
     private Animation rotateForward,rotateBackward;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,32 @@ public class MainActivity extends AppCompatActivity {
 
 //        Toolbar toolbar = findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
+
+
+        //ListViewオブジェクトの取得
+        final ListView listView=(ListView)findViewById(R.id.list_view);
+
+        SharedPreferences sp = this.getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
+        listCounter = sp.getInt("listNum",0);
+//        SharedPreferences.Editor e = sp.edit();
+//        e.clear().commit();
+
+        final RecyclerView recyclerView = findViewById(R.id.my_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager rLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(rLayoutManager);
+
+        final List<String> saveList = new ArrayList<String>();
+
+        for(int i=0;i<listCounter+1;i++){
+            String str = sp.getString("key"+i,null);
+            if(str!=null){
+                saveList.add(str);
+//                Toast toast = Toast.makeText(this, String.format(str+" ： %d",listCounter), Toast.LENGTH_LONG);
+//                toast.setGravity(Gravity.TOP, 0, 150);
+//                toast.show();
+            }
+        }
 
         final FloatingActionButton fab = findViewById(R.id.fabMain);
         final FloatingActionButton fab1 = findViewById(R.id.fab1);
@@ -85,13 +116,25 @@ public class MainActivity extends AppCompatActivity {
                         // ダイアログの設定
                         alertDialog.setTitle("追加");          //タイトル
                         alertDialog.setMessage("fab1");      //内容
+                        final EditText editText = new EditText(MainActivity.this);
+                        alertDialog.setView(editText);
                         alertDialog.setPositiveButton("追加", new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int which) {
+                                unit = "時間";
+                                String returnValue = editText.getText().toString();
+                                saveList.add(returnValue);
+                                listCounter++;
+                                Toast toast = Toast.makeText(MainActivity.this, String.format(returnValue+" ： %d",listCounter), Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.TOP, 0, 150);
+                                toast.show();
+                                addStringData(returnValue);
                                 fab.show();
                                 fab1.hide();
                                 fab2.hide();
                                 fabBack.hide();
+                                RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
+                                rAdapter.notifyDataSetChanged();
                             }
                         });
 
@@ -108,13 +151,25 @@ public class MainActivity extends AppCompatActivity {
                         // ダイアログの設定
                         alertDialog.setTitle("追加");          //タイトル
                         alertDialog.setMessage("fab2");      //内容
+                        final EditText editText = new EditText(MainActivity.this);
+                        alertDialog.setView(editText);
                         alertDialog.setPositiveButton("追加", new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int which) {
+                                unit = "円";
+                                String returnValue = editText.getText().toString();
+                                saveList.add(returnValue);
+                                listCounter++;
+                                Toast toast = Toast.makeText(MainActivity.this, String.format(returnValue+" ： %d",listCounter), Toast.LENGTH_LONG);
+                                toast.setGravity(Gravity.TOP, 0, 150);
+                                toast.show();
+                                addStringData(returnValue);
                                 fab.show();
                                 fab1.hide();
                                 fab2.hide();
                                 fabBack.hide();
+                                RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
+                                rAdapter.notifyDataSetChanged();
                             }
                         });
 
@@ -136,95 +191,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        //ListViewオブジェクトの取得
-        final ListView listView=(ListView)findViewById(R.id.list_view);
-
-        SharedPreferences sp = this.getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
-        listCounter = sp.getInt("listNum",1);
-//        SharedPreferences.Editor e = sp.edit();
-
-        final RecyclerView recyclerView = findViewById(R.id.my_recycler_view);
-        recyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager rLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(rLayoutManager);
-
-        final List<String> saveList = new ArrayList<String>();
-
-        for(int i=0;i<listCounter+1;i++){
-            String str = sp.getString("key"+i,null);
-            if(str!=null){
-                saveList.add(str);
-//                Toast toast = Toast.makeText(this, String.format(str+" ： %d",listCounter), Toast.LENGTH_LONG);
-//                toast.setGravity(Gravity.TOP, 0, 150);
-//                toast.show();
-            }
-        }
-
         if(saveList==null || saveList.size()==0){
             //ArrayAdapterオブジェクト生成
             adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         }else {
             //ArrayAdapterオブジェクト生成
             //adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,saveList);
-            RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList);
+            RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
             recyclerView.setAdapter(rAdapter);
+            rAdapter.notifyDataSetChanged();
         }
 
-        //Buttonオブジェクト取得
-//        Button btn=(Button)findViewById(R.id.btn);
-//        クリックイベントの通知先指定
-//        btn.setOnClickListener(new OnClickListener() {
-//            //クリックイベント
-//            @Override
-//            public void onClick(View v) {
-//                //要素追加
-//                addStringData();
-//            }
-//        });
         //Adapterのセット
         listView.setAdapter(adapter);
-
-        // リスト項目がクリックされたときのイベント
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                String msg = position + "番目のアイテムがクリックされました";
-//                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(MainActivity.this, SubActivity.class);  //インテントの作成
-                intent.putExtra("key",position);
-                SharedPreferences sp = MainActivity.this.getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
-                String sendData = sp.getString("key"+position,null);
-//                Toast.makeText(getApplicationContext(), sendData, Toast.LENGTH_LONG).show();
-                intent.putExtra("name",sendData);
-                startActivity(intent);
-            }
-        });
-        //        リスト項目が長押しされた時のイベントを追加
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view,final int position, long id) {
-//                String msg = position + "番目のアイテムが長押しされました";
-//                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setMessage("Are you sure you want to delete it ?")
-                        .setTitle("delete")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                saveList.remove(position);
-                                SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
-                                SharedPreferences.Editor e = sp.edit();
-                                e.remove("key"+position);
-                                e.commit();
-                                adapter.notifyDataSetChanged();
-                            }
-                        })
-                        .setNegativeButton("Cancel",null)
-                        .show();
-                return false;
-            }
-        });
-
 
         ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -234,13 +213,27 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
-                ((RecyclerViewAdapter) recyclerView.getAdapter()).remove(viewHolder.getAdapterPosition());
-            }
+                // 横にスワイプされたら要素を消す
+                int swipedPosition = viewHolder.getAdapterPosition();
+                RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
+                adapter.remove(swipedPosition-1);
+                String str = saveList.get(swipedPosition);
+                Toast toast = Toast.makeText(MainActivity.this, String.format(str+" ： %d",swipedPosition), Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.TOP, 0, 150);
+                toast.show();
 
+
+                swipedPosition--;
+//                saveList.remove(swipedPosition);
+                SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
+                SharedPreferences.Editor e = sp.edit();
+                e.remove("key"+swipedPosition);
+                e.commit();
+                }
 
         };
-
         (new ItemTouchHelper(callback)).attachToRecyclerView(recyclerView);
+
 
     }
 
@@ -249,8 +242,6 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.text);
         textView.setText(value);
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -278,29 +269,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     //要素追加処理
-    private void addStringData(){
+    private void addStringData(String edit){
         //EditTextオブジェクト取得
-        EditText edit=(EditText)findViewById(R.id.edit_text);
-        if(edit.getText().toString().equals("")==true){
+        if(edit==""){
             Toast toast = Toast.makeText(this, String.format("fill out blank"), Toast.LENGTH_LONG);
             toast.setGravity(Gravity.TOP, 0, 150);
             toast.show();
             return;
         }
-        SpannableStringBuilder sb = (SpannableStringBuilder)edit.getText();
-        String enterName = sb.toString();
-
         SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor e = sp.edit();
-        listCounter=adapter.getCount();
-        e.putString("key"+listCounter,enterName);
+        e.putString("key"+listCounter,edit);
         e.putInt("listNum",listCounter);
         e.commit();
-
-        //e.clear().commit();
-        //EditText(テキスト)を取得し、アダプタに追加
-        adapter.add(edit.getText().toString());
-        listName[listCounter]=edit.getText().toString();
     }
 
 }

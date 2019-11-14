@@ -1,14 +1,19 @@
 package com.example.counterexperinece;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +23,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -55,29 +61,80 @@ public class MainActivity extends AppCompatActivity {
 //        Toolbar toolbar = findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        final FloatingActionButton fab = findViewById(R.id.fabMain);
+        final FloatingActionButton fab1 = findViewById(R.id.fab1);
+        final FloatingActionButton fab2 = findViewById(R.id.fab2);
+        final FloatingActionButton fabBack = findViewById(R.id.fabBack);
+        fab.show();
+        fab1.hide();
+        fab2.hide();
+        fabBack.hide();
+
         fab.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder alertDialog=new AlertDialog.Builder(MainActivity.this);
+                fab.hide();
+                fab1.show();
+                fab2.show();
+                fabBack.show();
+                fab1.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        AlertDialog.Builder alertDialog=new AlertDialog.Builder(MainActivity.this);
+                        // ダイアログの設定
+                        alertDialog.setTitle("追加");          //タイトル
+                        alertDialog.setMessage("fab1");      //内容
+                        alertDialog.setPositiveButton("追加", new DialogInterface.OnClickListener() {
 
-                // ダイアログの設定
-                alertDialog.setTitle("追加");          //タイトル
-                alertDialog.setMessage("ないよう");      //内容
+                            public void onClick(DialogInterface dialog, int which) {
+                                fab.show();
+                                fab1.hide();
+                                fab2.hide();
+                                fabBack.hide();
+                            }
+                        });
 
-                alertDialog.setPositiveButton("追加", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        //「おーけー」ボタンが押された時の処理
+                        // ダイアログの作成と表示
+                        alertDialog.create().show();
                     }
                 });
 
-                // ダイアログの作成と表示
-                alertDialog.create().show();
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
+
+                fab2.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        AlertDialog.Builder alertDialog=new AlertDialog.Builder(MainActivity.this);
+                        // ダイアログの設定
+                        alertDialog.setTitle("追加");          //タイトル
+                        alertDialog.setMessage("fab2");      //内容
+                        alertDialog.setPositiveButton("追加", new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                                fab.show();
+                                fab1.hide();
+                                fab2.hide();
+                                fabBack.hide();
+                            }
+                        });
+
+                        // ダイアログの作成と表示
+                        alertDialog.create().show();
+                    }
+                });
+
+                fabBack.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        fab.show();
+                        fab1.hide();
+                        fab2.hide();
+                        fabBack.hide();
+                    }
+                });
             }
         });
+
 
         //ListViewオブジェクトの取得
         final ListView listView=(ListView)findViewById(R.id.list_view);
@@ -169,9 +226,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
-
-
         ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -190,10 +244,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     public void setTextView(String value){
         TextView textView = (TextView) findViewById(R.id.text);
         textView.setText(value);
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -245,6 +302,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.add(edit.getText().toString());
         listName[listCounter]=edit.getText().toString();
     }
+
 }
 
 

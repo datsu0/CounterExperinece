@@ -46,15 +46,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Intent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static java.sql.DriverManager.println;
 
@@ -64,7 +68,9 @@ public class MainActivity extends AppCompatActivity {
     //private RecyclerView recyclerView;
     int listCounter=0;
     String unit="回";
-    private Animation rotateForward,rotateBackward;
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,10 +117,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(dataList);
+        final RecyclerViewAdapter rAdapter = new RecyclerViewAdapter(dataList);
+        rAdapter.setOnItemClickListener(new RecyclerViewAdapter.onItemClickListener() {
+            @Override
+            public void onClick(View view, String name) {
+                Toast.makeText(MainActivity.this,name,Toast.LENGTH_SHORT).show();
+
+//                Dialog dialog = new Dialog(MainActivity.this);
+//                LayoutInflater factory = LayoutInflater.from(MainActivity.this);
+//                View inputView = factory.inflate(R.layout.dialog,null);
+//                dialog.setContentView(inputView);
+
+                DialogFragment newFragment = new TestDialogFragment();
+                newFragment.show(getSupportFragmentManager(),"test");
+
+            }
+        });
         recyclerView.setAdapter(rAdapter);
         rAdapter.notifyDataSetChanged();
-
 
         final FloatingActionButton fab = findViewById(R.id.fabMain);
         final FloatingActionButton fab1 = findViewById(R.id.fab1);
@@ -167,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                                 e.putString("unit"+returnValue,unit);
 
 //                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
-                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(dataList);
+//                                final RecyclerViewAdapter rAdapter = new RecyclerViewAdapter(dataList); occur error
                                 recyclerView.setAdapter(rAdapter);
                                 rAdapter.notifyDataSetChanged();
 //                                Toast toast = Toast.makeText(MainActivity.this, String.format(returnValue+" ： %d",listCounter), Toast.LENGTH_LONG);
@@ -240,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
                                 e.putString("unit"+returnValue,unit);
 
 //                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
-                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(dataList);
+//                                final RecyclerViewAdapter rAdapter = new RecyclerViewAdapter(dataList); occur error
                                 recyclerView.setAdapter(rAdapter);
 //                                Toast toast = Toast.makeText(MainActivity.this, String.format(returnValue+" ： %d",listCounter), Toast.LENGTH_LONG);
 //                                toast.setGravity(Gravity.TOP, 0, 150);
@@ -411,6 +431,53 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-}
+    public interface Myadapter{
+        final int src=0;
+        void get();
+    }
 
+    public static class TestDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View content = inflater.inflate(R.layout.dialog, null);
+            builder.setView(content);
+
+            builder.setMessage("数値入力")
+                    .setPositiveButton("入力", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+
+                        }
+                    });
+            // Create the AlertDialog object and return it
+//            SeekBar seek = getView().findViewById(R.id.seek_bar);
+//            seek.setMax(100);
+//            seek.setKeyProgressIncrement(1);
+//            TextView text = getView().findViewById(R.id.text_dialog);
+//            seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//                @Override
+//                public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
+//
+//                }
+//
+//                @Override
+//                public void onStartTrackingTouch(SeekBar seekBar) {
+//
+//                }
+//
+//                @Override
+//                public void onStopTrackingTouch(SeekBar seekBar) {
+//
+//                }
+//            });
+//
+            return builder.create();
+        }
+    }
+}
 

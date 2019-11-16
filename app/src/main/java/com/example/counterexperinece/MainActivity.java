@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -20,8 +21,12 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.transition.TransitionValues;
@@ -50,6 +55,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.sql.DriverManager.println;
 
 public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
@@ -80,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager rLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(rLayoutManager);
 
-        final List<String> saveList = new ArrayList<String>();
-        final List<String> unitList = new ArrayList<String>();
+//        final List<String> saveList = new ArrayList<String>();
+//        final List<String> unitList = new ArrayList<String>();
 
         final List<DataModel> dataList = new ArrayList<DataModel>();
 
@@ -90,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
             String unitStr = sp.getString("unit"+str,null);
             DataModel data = new DataModel();
             if(str!=null){
-                saveList.add(str);
-                unitList.add(unitStr);
+//                saveList.add(str);
+//                unitList.add(unitStr);
                 data.data=str;
                 data.unit=unitStr;
                 data.num=10;
@@ -104,9 +111,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
+        final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(dataList);
         recyclerView.setAdapter(rAdapter);
         rAdapter.notifyDataSetChanged();
+
 
         final FloatingActionButton fab = findViewById(R.id.fabMain);
         final FloatingActionButton fab1 = findViewById(R.id.fab1);
@@ -129,11 +137,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view){
 
-
                         AlertDialog.Builder alertDialog=new AlertDialog.Builder(MainActivity.this);
                         // ダイアログの設定
                         alertDialog.setTitle("追加");          //タイトル
-                        alertDialog.setMessage("fab1");      //内容
+                        alertDialog.setMessage("何をしたか入力");      //内容
                         final EditText editText = new EditText(MainActivity.this);
                         alertDialog.setView(editText);
                         alertDialog.setPositiveButton("追加", new DialogInterface.OnClickListener() {
@@ -145,10 +152,10 @@ public class MainActivity extends AppCompatActivity {
                                     toast.show();
                                     return;
                                 }
-                                unit = "時間";
+                                //unit = "時間";
                                 String returnValue = editText.getText().toString();
-                                saveList.add(returnValue);
-                                unitList.add(unit);
+//                                saveList.add(returnValue);
+//                                unitList.add(unit);
 
                                 DataModel data = new DataModel();
                                 data.data = returnValue;
@@ -159,14 +166,14 @@ public class MainActivity extends AppCompatActivity {
                                 SharedPreferences.Editor e = sp.edit();
                                 e.putString("unit"+returnValue,unit);
 
-                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
-//                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(dataList,unit);
+//                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
+                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(dataList);
                                 recyclerView.setAdapter(rAdapter);
                                 rAdapter.notifyDataSetChanged();
-                                Toast toast = Toast.makeText(MainActivity.this, String.format(returnValue+" ： %d",listCounter), Toast.LENGTH_LONG);
-                                toast.setGravity(Gravity.TOP, 0, 150);
-                                toast.show();
-                                addStringData(returnValue);
+//                                Toast toast = Toast.makeText(MainActivity.this, String.format(returnValue+" ： %d",listCounter), Toast.LENGTH_LONG);
+//                                toast.setGravity(Gravity.TOP, 0, 150);
+//                                toast.show();
+                                addStringData(data);
                                 fab.show();
                                 fab1.hide();
                                 fab2.hide();
@@ -175,8 +182,26 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
+                        String[] items = {"時間","分","回"};
+                        AlertDialog.Builder unitDialog = new AlertDialog.Builder(MainActivity.this);
+                        unitDialog.setTitle("単位を選んで")
+                                .setItems(items, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if(which==0){
+                                            unit = "時間";
+                                        }else if(which==1){
+                                            unit = "分";
+                                        }else {
+                                            unit = "回";
+                                        }
+                                    }
+                                });
+
                         // ダイアログの作成と表示
                         alertDialog.create().show();
+                        unitDialog.create().show();
+
                     }
                 });
 
@@ -187,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                         AlertDialog.Builder alertDialog=new AlertDialog.Builder(MainActivity.this);
                         // ダイアログの設定
                         alertDialog.setTitle("追加");          //タイトル
-                        alertDialog.setMessage("fab2");      //内容
+                        alertDialog.setMessage("何にお金をかけたか入力");      //内容
                         final EditText editText = new EditText(MainActivity.this);
                         alertDialog.setView(editText);
                         alertDialog.setPositiveButton("追加", new DialogInterface.OnClickListener() {
@@ -202,8 +227,8 @@ public class MainActivity extends AppCompatActivity {
                                 unit = "円";
                                 rAdapter.notifyDataSetChanged();
                                 String returnValue = editText.getText().toString();
-                                saveList.add(returnValue);
-                                unitList.add(unit);
+//                                saveList.add(returnValue);
+//                                unitList.add(unit);
 
                                 DataModel data = new DataModel();
                                 data.data = returnValue;
@@ -214,14 +239,14 @@ public class MainActivity extends AppCompatActivity {
                                 SharedPreferences.Editor e = sp.edit();
                                 e.putString("unit"+returnValue,unit);
 
-                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
-//                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(dataList,unit);
+//                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
+                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(dataList);
                                 recyclerView.setAdapter(rAdapter);
-                                Toast toast = Toast.makeText(MainActivity.this, String.format(returnValue+" ： %d",listCounter), Toast.LENGTH_LONG);
-                                toast.setGravity(Gravity.TOP, 0, 150);
-                                toast.show();
+//                                Toast toast = Toast.makeText(MainActivity.this, String.format(returnValue+" ： %d",listCounter), Toast.LENGTH_LONG);
+//                                toast.setGravity(Gravity.TOP, 0, 150);
+//                                toast.show();
 
-                                addStringData(returnValue);
+                                addStringData(data);
                                 fab.show();
                                 fab1.hide();
                                 fab2.hide();
@@ -261,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Adapterのセット
-        listView.setAdapter(adapter);
+//        listView.setAdapter(adapter);
 
         ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -271,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
+
                 // 横にスワイプされたら要素を消す
                 int swipedPosition = viewHolder.getAdapterPosition();
                 RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
@@ -283,12 +309,12 @@ public class MainActivity extends AppCompatActivity {
 
 
                 //String str = saveList.get(swipedPosition);
-                saveList.remove(swipedPosition);
-                adapter.remove(saveList,swipedPosition);
+                dataList.remove(swipedPosition);
+                adapter.remove(dataList,swipedPosition);
 
-                for(int z=0;z<listCounter+1;z++){
-                    String str = saveList.get(z);
-                    String unit = unitList.get(z);
+                for(int z=0;z<listCounter;z++){
+                    String str = dataList.get(z).data;
+                    String unit = dataList.get(z).unit;
                     if(str!=null){
                         e.putString("key"+z,str);
                         e.putString("unit"+str,unit);
@@ -303,9 +329,42 @@ public class MainActivity extends AppCompatActivity {
 //                toast.setGravity(Gravity.TOP, 0, 150);
 //                toast.show();
             }
+
+            final Drawable deleteIcon = ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_delete_black_24dp);
+            @Override
+            public void onChildDraw (@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                View itemView = viewHolder.itemView;
+
+                // キャンセルされた時
+                if (dX == 0f && !isCurrentlyActive) {
+                    clearCanvas(c, itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, false);
+                    return;
+                }
+
+                ColorDrawable background = new ColorDrawable();
+                background .setColor(Color.parseColor("#f44336"));
+                background.setBounds(itemView.getRight() + (int)dX, itemView.getTop(),  itemView.getRight(), itemView.getBottom());
+                background.draw(c);
+
+                int deleteIconTop = itemView.getTop() + (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
+                int deleteIconMargin = (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
+                int deleteIconLeft = itemView.getRight() - deleteIconMargin - deleteIcon.getIntrinsicWidth();
+                int deleteIconRight = itemView.getRight() - deleteIconMargin;
+                int deleteIconBottom = deleteIconTop +  deleteIcon.getIntrinsicHeight();
+
+                deleteIcon.setBounds(deleteIconLeft, deleteIconTop, deleteIconRight, deleteIconBottom);
+                deleteIcon.draw(c);
+            }
         };
         (new ItemTouchHelper(callback)).attachToRecyclerView(recyclerView);
+    }
 
+    private void clearCanvas(Canvas c, int left, int top, int right, int bottom) {
+        Paint paint = new Paint();
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        c.drawRect(left, top, right, bottom, paint);
     }
 
 
@@ -340,12 +399,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     //要素追加処理
-    private void addStringData(String edit){
+    private void addStringData(DataModel data){
         //EditTextオブジェクト取得
         listCounter++;
         SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor e = sp.edit();
-        e.putString("key"+listCounter,edit);
+        e.putString("key"+listCounter,data.data);
+        e.putString("unit"+data.data,data.unit);
         e.putInt("listNum",listCounter);
         e.commit();
 

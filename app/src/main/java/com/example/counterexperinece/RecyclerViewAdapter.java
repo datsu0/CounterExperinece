@@ -8,14 +8,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.sql.DriverManager.println;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     List<String> dataset = new ArrayList<String>();
+    List<DataModel> dataModels = new ArrayList<DataModel>();
     String unit = "回";
     int value = 0;
+    private View.OnClickListener listener;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -33,12 +39,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             rTextView = (TextView)v.findViewById(R.id.text_view_unit);
             //nTextView = (TextView)v.findViewById(R.id.text_view_num);
         }
+
+
     }
 
+
     // Provide a suitable constructor (depends on the kind of dataset)
-    RecyclerViewAdapter(List<String> myDataset,String Myunit) {
-        dataset = myDataset;
-        unit = Myunit;
+//    RecyclerViewAdapter(List<String> myDataset,String Myunit) {
+//        dataset = myDataset;
+//        unit = Myunit;
+//    }
+
+    RecyclerViewAdapter(List<DataModel>myDataset) {
+        dataModels = myDataset;
     }
 
     // Create new views (invoked by the layout manager)
@@ -59,27 +72,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.mTextView.setText(dataset.get(position));
-        holder.rTextView.setText(unit);
+        holder.mTextView.setText(dataModels.get(position).data);
+        holder.rTextView.setText(dataModels.get(position).unit);
         //holder.nTextView.setText(String.valueOf(value));
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return dataset.size();
+        return dataModels.size();
     }
 
 
-    public void remove(List<String> myDataset,int position){
-        dataset=myDataset;
+    public void remove(List<DataModel> myDataset,int position){
+        dataModels=myDataset;
         notifyItemChanged(position);
         notifyDataSetChanged();
     }
 
-    public void addUnit(String item){
-        unit = item;
-        notifyDataSetChanged();
-    }
 
 }

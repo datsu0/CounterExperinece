@@ -28,6 +28,7 @@ import android.transition.TransitionValues;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,11 +53,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
-    String[] listName = new String[100];
     final static String FILENAME = "data.xml";
     //private RecyclerView recyclerView;
     int listCounter=0;
-    String unit="";
+    String unit="回";
     private Animation rotateForward,rotateBackward;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,16 +81,32 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(rLayoutManager);
 
         final List<String> saveList = new ArrayList<String>();
+        final List<String> unitList = new ArrayList<String>();
+
+        final List<DataModel> dataList = new ArrayList<DataModel>();
 
         for(int i=0;i<listCounter+1;i++){
             String str = sp.getString("key"+i,null);
+            String unitStr = sp.getString("unit"+str,null);
+            DataModel data = new DataModel();
             if(str!=null){
                 saveList.add(str);
+                unitList.add(unitStr);
+                data.data=str;
+                data.unit=unitStr;
+                data.num=10;
+
+                dataList.add(data);
+
 //                Toast toast = Toast.makeText(this, String.format(str+" ： %d",listCounter), Toast.LENGTH_LONG);
 //                toast.setGravity(Gravity.TOP, 0, 150);
 //                toast.show();
             }
         }
+
+        final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
+        recyclerView.setAdapter(rAdapter);
+        rAdapter.notifyDataSetChanged();
 
         final FloatingActionButton fab = findViewById(R.id.fabMain);
         final FloatingActionButton fab1 = findViewById(R.id.fab1);
@@ -112,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
                 fab1.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view){
+
+
                         AlertDialog.Builder alertDialog=new AlertDialog.Builder(MainActivity.this);
                         // ダイアログの設定
                         alertDialog.setTitle("追加");          //タイトル
@@ -121,10 +139,30 @@ public class MainActivity extends AppCompatActivity {
                         alertDialog.setPositiveButton("追加", new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int which) {
+                                if(editText.getText().toString().equals("")==true){
+                                    Toast toast = Toast.makeText(MainActivity.this, String.format("fill out blank"), Toast.LENGTH_LONG);
+                                    toast.setGravity(Gravity.TOP, 0, 150);
+                                    toast.show();
+                                    return;
+                                }
                                 unit = "時間";
                                 String returnValue = editText.getText().toString();
                                 saveList.add(returnValue);
-                                listCounter++;
+                                unitList.add(unit);
+
+                                DataModel data = new DataModel();
+                                data.data = returnValue;
+                                data.unit = unit;
+                                dataList.add(data);
+
+                                SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
+                                SharedPreferences.Editor e = sp.edit();
+                                e.putString("unit"+returnValue,unit);
+
+                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
+//                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(dataList,unit);
+                                recyclerView.setAdapter(rAdapter);
+                                rAdapter.notifyDataSetChanged();
                                 Toast toast = Toast.makeText(MainActivity.this, String.format(returnValue+" ： %d",listCounter), Toast.LENGTH_LONG);
                                 toast.setGravity(Gravity.TOP, 0, 150);
                                 toast.show();
@@ -133,8 +171,7 @@ public class MainActivity extends AppCompatActivity {
                                 fab1.hide();
                                 fab2.hide();
                                 fabBack.hide();
-                                RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
-                                rAdapter.notifyDataSetChanged();
+
                             }
                         });
 
@@ -156,20 +193,39 @@ public class MainActivity extends AppCompatActivity {
                         alertDialog.setPositiveButton("追加", new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int which) {
+                                if(editText.getText().toString().equals("")==true){
+                                    Toast toast = Toast.makeText(MainActivity.this, String.format("fill out blank"), Toast.LENGTH_LONG);
+                                    toast.setGravity(Gravity.TOP, 0, 150);
+                                    toast.show();
+                                    return;
+                                }
                                 unit = "円";
+                                rAdapter.notifyDataSetChanged();
                                 String returnValue = editText.getText().toString();
                                 saveList.add(returnValue);
-                                listCounter++;
+                                unitList.add(unit);
+
+                                DataModel data = new DataModel();
+                                data.data = returnValue;
+                                data.unit = unit;
+                                dataList.add(data);
+
+                                SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
+                                SharedPreferences.Editor e = sp.edit();
+                                e.putString("unit"+returnValue,unit);
+
+                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
+//                                final RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(dataList,unit);
+                                recyclerView.setAdapter(rAdapter);
                                 Toast toast = Toast.makeText(MainActivity.this, String.format(returnValue+" ： %d",listCounter), Toast.LENGTH_LONG);
                                 toast.setGravity(Gravity.TOP, 0, 150);
                                 toast.show();
+
                                 addStringData(returnValue);
                                 fab.show();
                                 fab1.hide();
                                 fab2.hide();
                                 fabBack.hide();
-                                RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
-                                rAdapter.notifyDataSetChanged();
                             }
                         });
 
@@ -191,16 +247,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        if(saveList==null || saveList.size()==0){
-            //ArrayAdapterオブジェクト生成
-            adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-        }else {
-            //ArrayAdapterオブジェクト生成
-            //adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,saveList);
-            RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
-            recyclerView.setAdapter(rAdapter);
-            rAdapter.notifyDataSetChanged();
-        }
+//        if(saveList==null || saveList.size()==0){
+//            //ArrayAdapterオブジェクト生成
+//            adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+//        }else {
+//            //ArrayAdapterオブジェクト生成
+//            //adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,saveList);
+//            RecyclerView.Adapter rAdapter = new RecyclerViewAdapter(saveList,unit);
+//            recyclerView.setAdapter(rAdapter);
+//            rAdapter.notifyDataSetChanged();
+//        }
+
+
 
         //Adapterのセット
         listView.setAdapter(adapter);
@@ -216,24 +274,37 @@ public class MainActivity extends AppCompatActivity {
                 // 横にスワイプされたら要素を消す
                 int swipedPosition = viewHolder.getAdapterPosition();
                 RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
-                adapter.remove(swipedPosition-1);
-                String str = saveList.get(swipedPosition);
-                Toast toast = Toast.makeText(MainActivity.this, String.format(str+" ： %d",swipedPosition), Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.TOP, 0, 150);
-                toast.show();
-
-
-                swipedPosition--;
+                listCounter--;
 //                saveList.remove(swipedPosition);
                 SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
                 SharedPreferences.Editor e = sp.edit();
-                e.remove("key"+swipedPosition);
-                e.commit();
+                e.clear();
+                e.putInt("listNum",listCounter);
+
+
+                //String str = saveList.get(swipedPosition);
+                saveList.remove(swipedPosition);
+                adapter.remove(saveList,swipedPosition);
+
+                for(int z=0;z<listCounter+1;z++){
+                    String str = saveList.get(z);
+                    String unit = unitList.get(z);
+                    if(str!=null){
+                        e.putString("key"+z,str);
+                        e.putString("unit"+str,unit);
+//                Toast toast = Toast.makeText(this, String.format(str+" ： %d",listCounter), Toast.LENGTH_LONG);
+//                toast.setGravity(Gravity.TOP, 0, 150);
+//                toast.show();
+                    }
                 }
 
+                e.commit();
+//                Toast toast = Toast.makeText(MainActivity.this, String.format(str+" ： %d",swipedPosition), Toast.LENGTH_LONG);
+//                toast.setGravity(Gravity.TOP, 0, 150);
+//                toast.show();
+            }
         };
         (new ItemTouchHelper(callback)).attachToRecyclerView(recyclerView);
-
 
     }
 
@@ -271,17 +342,13 @@ public class MainActivity extends AppCompatActivity {
     //要素追加処理
     private void addStringData(String edit){
         //EditTextオブジェクト取得
-        if(edit==""){
-            Toast toast = Toast.makeText(this, String.format("fill out blank"), Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.TOP, 0, 150);
-            toast.show();
-            return;
-        }
+        listCounter++;
         SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor e = sp.edit();
         e.putString("key"+listCounter,edit);
         e.putInt("listNum",listCounter);
         e.commit();
+
     }
 
 }

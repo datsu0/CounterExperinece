@@ -14,7 +14,8 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     List<String> dataset = new ArrayList<String>();
-    String unit ;
+    String unit = "回";
+    int value = 0;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -24,11 +25,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         // each data item is just a string in this case
         TextView mTextView;
         TextView rTextView;
+        TextView nTextView;
 
         ViewHolder(View v) {
             super(v);
             mTextView = (TextView)v.findViewById(R.id.text_view);
             rTextView = (TextView)v.findViewById(R.id.text_view_unit);
+            //nTextView = (TextView)v.findViewById(R.id.text_view_num);
         }
     }
 
@@ -58,6 +61,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         // - replace the contents of the view with that element
         holder.mTextView.setText(dataset.get(position));
         holder.rTextView.setText(unit);
+        //holder.nTextView.setText(String.valueOf(value));
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -67,10 +71,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
 
-    public  void remove(int position){
-        dataset.remove(position);
+    public void remove(List<String> myDataset,int position){
+        dataset=myDataset;
         notifyItemChanged(position);
+        notifyDataSetChanged();
     }
 
+    public void addUnit(String item){
+        unit = item;
+        notifyDataSetChanged();
+    }
 
 }

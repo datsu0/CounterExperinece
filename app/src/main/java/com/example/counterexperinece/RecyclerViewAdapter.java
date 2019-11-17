@@ -40,7 +40,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             super(v);
             mTextView = (TextView)v.findViewById(R.id.text_view);
             rTextView = (TextView)v.findViewById(R.id.text_view_unit);
-            //nTextView = (TextView)v.findViewById(R.id.text_view_num);
+            nTextView = (TextView)v.findViewById(R.id.text_view_num);
             linearLayout = (LinearLayout) v.findViewById(R.id.linear_layout);
         }
 
@@ -85,6 +85,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         // - replace the contents of the view with that element
         holder.mTextView.setText(dataModels.get(position).data);
         holder.rTextView.setText(dataModels.get(position).unit);
+        String num = String.valueOf(dataModels.get(position).num);
+        holder.nTextView.setText(num);
+        //holder.nTextView.setText(String.valueOf(value));
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +95,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 listener.onClick(v, dataModels.get(position),position);
             }
         });
-        //holder.nTextView.setText(String.valueOf(value));
+
     }
 
     // Return the size of your dataset (invoked by the layout manager)

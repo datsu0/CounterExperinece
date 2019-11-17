@@ -64,7 +64,7 @@ import java.util.Locale;
 
 import static java.sql.DriverManager.println;
 
-public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
+public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     final static String FILENAME = "data.xml";
     //private RecyclerView recyclerView;
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         rAdapter.setOnItemClickListener(new RecyclerViewAdapter.onItemClickListener() {
             @Override
             public void onClick(View view,final DataModel data,int position) {
-                Toast.makeText(MainActivity.this,data.data,Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this,data.data,Toast.LENGTH_SHORT).show();
 
 //                Dialog dialog = new Dialog(MainActivity.this);
 //                LayoutInflater factory = LayoutInflater.from(MainActivity.this);
@@ -135,6 +135,12 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
 //                DialogFragment newFragment = new TestDialogFragment();
 //                newFragment.show(getSupportFragmentManager(),"test");
+
+                Intent intent = new Intent(MainActivity.this,SubActivity.class);
+                intent.putExtra("num",data.num);
+                intent.putExtra("data",data.data);
+                startActivity(intent);
+
 
             }
         });
@@ -145,10 +151,14 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         final FloatingActionButton fab1 = findViewById(R.id.fab1);
         final FloatingActionButton fab2 = findViewById(R.id.fab2);
         final FloatingActionButton fabBack = findViewById(R.id.fabBack);
+        final TextView textView1 = findViewById(R.id.fabtext1);
+        final TextView textView2 = findViewById(R.id.fabtext2);
         fab.show();
         fab1.hide();
         fab2.hide();
         fabBack.hide();
+        textView1.setVisibility(View.GONE);
+        textView2.setVisibility(View.GONE);
 
         fab.setOnClickListener(new View.OnClickListener() {
 
@@ -158,6 +168,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 fab1.show();
                 fab2.show();
                 fabBack.show();
+                textView1.setVisibility(View.VISIBLE);
+                textView2.setVisibility(View.VISIBLE);
                 fab1.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View view){
@@ -185,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                                 DataModel data = new DataModel();
                                 data.data = returnValue;
                                 data.unit = unit;
+                                data.num = 0;
                                 dataList.add(data);
 
                                 SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
@@ -203,6 +216,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                                 fab1.hide();
                                 fab2.hide();
                                 fabBack.hide();
+                                textView1.setVisibility(View.GONE);
+                                textView2.setVisibility(View.GONE);
 
                             }
                         });
@@ -258,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                                 DataModel data = new DataModel();
                                 data.data = returnValue;
                                 data.unit = unit;
+                                data.num = 0;
                                 dataList.add(data);
 
                                 SharedPreferences sp = getSharedPreferences(FILENAME,Context.MODE_PRIVATE);
@@ -276,6 +292,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                                 fab1.hide();
                                 fab2.hide();
                                 fabBack.hide();
+                                textView1.setVisibility(View.GONE);
+                                textView2.setVisibility(View.GONE);
                             }
                         });
 
@@ -291,6 +309,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                         fab1.hide();
                         fab2.hide();
                         fabBack.hide();
+                        textView1.setVisibility(View.GONE);
+                        textView2.setVisibility(View.GONE);
                     }
                 });
             }
@@ -388,17 +408,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         (new ItemTouchHelper(callback)).attachToRecyclerView(recyclerView);
     }
 
-    @Override
-    public void onValueChange(NumberPicker numberPicker, int i, int i1) {
-        Toast.makeText(this,
-                "selected number " + numberPicker.getValue(), Toast.LENGTH_SHORT).show();
-    }
-
-    public void showNumberPicker(View view){
-        NumberPickerDialog newFragment = new NumberPickerDialog();
-        newFragment.setValueChangeListener(this);
-        newFragment.show(getSupportFragmentManager(), "time picker");
-    }
 
     private void clearCanvas(Canvas c, int left, int top, int right, int bottom) {
         Paint paint = new Paint();
@@ -429,7 +438,11 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 builder.show();
                 break;
             case R.id.menu2:
-                builder.setMessage("長押しで消去可能");
+                builder.setMessage("スワイプで消去可能");
+                builder.show();
+                break;
+            case R.id.menu3:
+                builder.setMessage("タップで編集");
                 builder.show();
                 break;
         }
@@ -445,57 +458,11 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         SharedPreferences.Editor e = sp.edit();
         e.putString("key"+listCounter,data.data);
         e.putString("unit"+data.data,data.unit);
+        e.putInt("num"+data.data,data.num);
         e.putInt("listNum",listCounter);
         e.commit();
 
     }
-
-
-
-    public class NumberPickerDialog extends DialogFragment {
-        private NumberPicker.OnValueChangeListener valueChangeListener;
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-            final NumberPicker numberPicker = new NumberPicker(getActivity());
-
-            numberPicker.setMinValue(20);
-            numberPicker.setMaxValue(60);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Choose Value");
-            builder.setMessage("Choose a number :");
-
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    valueChangeListener.onValueChange(numberPicker,
-                            numberPicker.getValue(), numberPicker.getValue());
-                }
-            });
-
-            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    valueChangeListener.onValueChange(numberPicker,
-                            numberPicker.getValue(), numberPicker.getValue());
-                }
-            });
-
-            builder.setView(numberPicker);
-            return builder.create();
-        }
-
-        public NumberPicker.OnValueChangeListener getValueChangeListener() {
-            return valueChangeListener;
-        }
-
-        public void setValueChangeListener(NumberPicker.OnValueChangeListener valueChangeListener) {
-            this.valueChangeListener = valueChangeListener;
-        }
-    }
-
 
 }
 

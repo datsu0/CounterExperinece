@@ -8,7 +8,12 @@
         />
     <item
         android:id="@+id/menu2"
-        android:title="アイテムの消し方"
+        android:title="項目の消し方"
+        android:icon="@android:drawable/ic_menu_call"
+       />
+    <item
+        android:id="@+id/menu3"
+        android:title="数値の編集"
         android:icon="@android:drawable/ic_menu_call"
         />
 </menu>

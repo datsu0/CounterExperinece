@@ -67,6 +67,29 @@
         app:layout_anchor="@id/fabBack"
         app:layout_anchorGravity="top|right|end" />
 
+    <View
+        android:id="@+id/spaceText1"
+        android:layout_width="380px"
+        android:layout_height="85dp"
+        app:layout_anchor="@id/fabBack"
+        app:layout_anchorGravity="top|right|end" />
+
+    <TextView
+        android:id="@+id/fabtext1"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:background="@drawable/flame_style"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/spaceText1"
+        android:textColor="#000000"
+        android:text="お金記録"
+        android:textSize="20dp"/>
+
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab2"
         android:layout_width="wrap_content"
@@ -85,10 +108,33 @@
         app:layout_anchor="@id/fab2"
         app:layout_anchorGravity="top|right|end" />
 
+    <View
+        android:id="@+id/spaceText2"
+        android:layout_width="380px"
+        android:layout_height="85dp"
+        app:layout_anchor="@id/fab2"
+        app:layout_anchorGravity="top|right|end" />
+
+    <TextView
+        android:id="@+id/fabtext2"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        android:background="@drawable/flame_style"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        app:layout_anchor="@id/spaceText2"
+        android:text="時間記録"
+        android:textSize="20dp"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         fab:fab_size="mini"
         fab:fab_label="使った時間"
         app:layout_anchor="@id/spaceup"

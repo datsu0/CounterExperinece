@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -48,6 +49,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +64,7 @@ import java.util.Locale;
 
 import static java.sql.DriverManager.println;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
     ArrayAdapter<String> adapter;
     final static String FILENAME = "data.xml";
     //private RecyclerView recyclerView;
@@ -101,13 +103,14 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i<listCounter+1;i++){
             String str = sp.getString("key"+i,null);
             String unitStr = sp.getString("unit"+str,null);
+            int num = sp.getInt("num"+str,0);
             DataModel data = new DataModel();
             if(str!=null){
 //                saveList.add(str);
 //                unitList.add(unitStr);
                 data.data=str;
                 data.unit=unitStr;
-                data.num=10;
+                data.num=num;
 
                 dataList.add(data);
 
@@ -117,19 +120,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+
+
         final RecyclerViewAdapter rAdapter = new RecyclerViewAdapter(dataList);
         rAdapter.setOnItemClickListener(new RecyclerViewAdapter.onItemClickListener() {
             @Override
-            public void onClick(View view, String name) {
-                Toast.makeText(MainActivity.this,name,Toast.LENGTH_SHORT).show();
+            public void onClick(View view,final DataModel data,int position) {
+                Toast.makeText(MainActivity.this,data.data,Toast.LENGTH_SHORT).show();
 
 //                Dialog dialog = new Dialog(MainActivity.this);
 //                LayoutInflater factory = LayoutInflater.from(MainActivity.this);
 //                View inputView = factory.inflate(R.layout.dialog,null);
 //                dialog.setContentView(inputView);
 
-                DialogFragment newFragment = new TestDialogFragment();
-                newFragment.show(getSupportFragmentManager(),"test");
+//                DialogFragment newFragment = new TestDialogFragment();
+//                newFragment.show(getSupportFragmentManager(),"test");
 
             }
         });
@@ -335,9 +340,11 @@ public class MainActivity extends AppCompatActivity {
                 for(int z=0;z<listCounter;z++){
                     String str = dataList.get(z).data;
                     String unit = dataList.get(z).unit;
+                    int num = dataList.get(z).num;
                     if(str!=null){
                         e.putString("key"+z,str);
                         e.putString("unit"+str,unit);
+                        e.putInt("num"+str,num);
 //                Toast toast = Toast.makeText(this, String.format(str+" ： %d",listCounter), Toast.LENGTH_LONG);
 //                toast.setGravity(Gravity.TOP, 0, 150);
 //                toast.show();
@@ -379,6 +386,18 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         (new ItemTouchHelper(callback)).attachToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+        Toast.makeText(this,
+                "selected number " + numberPicker.getValue(), Toast.LENGTH_SHORT).show();
+    }
+
+    public void showNumberPicker(View view){
+        NumberPickerDialog newFragment = new NumberPickerDialog();
+        newFragment.setValueChangeListener(this);
+        newFragment.show(getSupportFragmentManager(), "time picker");
     }
 
     private void clearCanvas(Canvas c, int left, int top, int right, int bottom) {
@@ -431,53 +450,52 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public interface Myadapter{
-        final int src=0;
-        void get();
-    }
 
-    public static class TestDialogFragment extends DialogFragment {
+
+    public class NumberPickerDialog extends DialogFragment {
+        private NumberPicker.OnValueChangeListener valueChangeListener;
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-            // Use the Builder class for convenient dialog construction
+            final NumberPicker numberPicker = new NumberPicker(getActivity());
+
+            numberPicker.setMinValue(20);
+            numberPicker.setMaxValue(60);
+
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Choose Value");
+            builder.setMessage("Choose a number :");
 
-            LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View content = inflater.inflate(R.layout.dialog, null);
-            builder.setView(content);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    valueChangeListener.onValueChange(numberPicker,
+                            numberPicker.getValue(), numberPicker.getValue());
+                }
+            });
 
-            builder.setMessage("数値入力")
-                    .setPositiveButton("入力", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User cancelled the dialog
+            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    valueChangeListener.onValueChange(numberPicker,
+                            numberPicker.getValue(), numberPicker.getValue());
+                }
+            });
 
-                        }
-                    });
-            // Create the AlertDialog object and return it
-//            SeekBar seek = getView().findViewById(R.id.seek_bar);
-//            seek.setMax(100);
-//            seek.setKeyProgressIncrement(1);
-//            TextView text = getView().findViewById(R.id.text_dialog);
-//            seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//                @Override
-//                public void onProgressChanged(SeekBar seekBar, final int progress, boolean fromUser) {
-//
-//                }
-//
-//                @Override
-//                public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//                }
-//
-//                @Override
-//                public void onStopTrackingTouch(SeekBar seekBar) {
-//
-//                }
-//            });
-//
+            builder.setView(numberPicker);
             return builder.create();
         }
+
+        public NumberPicker.OnValueChangeListener getValueChangeListener() {
+            return valueChangeListener;
+        }
+
+        public void setValueChangeListener(NumberPicker.OnValueChangeListener valueChangeListener) {
+            this.valueChangeListener = valueChangeListener;
+        }
     }
+
+
 }
 

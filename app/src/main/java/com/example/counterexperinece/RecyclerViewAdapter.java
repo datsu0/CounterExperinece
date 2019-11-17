@@ -48,7 +48,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     public interface onItemClickListener{
-        void onClick(View view,String name);
+        void onClick(View view,DataModel data,int positon);
         //void onClick(View view);
     }
 
@@ -88,7 +88,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onClick(v, dataModels.get(position).data);
+                //listener.onClick(v, dataModels.get(position).data,dataModels.get(position).unit);
+                listener.onClick(v, dataModels.get(position),position);
             }
         });
         //holder.nTextView.setText(String.valueOf(value));

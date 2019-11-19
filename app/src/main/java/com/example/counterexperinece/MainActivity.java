@@ -313,6 +313,7 @@ public class MainActivity extends AppCompatActivity {
                         textView2.setVisibility(View.GONE);
                     }
                 });
+
             }
         });
 
